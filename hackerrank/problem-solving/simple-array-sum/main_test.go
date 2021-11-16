@@ -14,6 +14,7 @@ func TestShouldSumArrayScenario1(t *testing.T) {
 	var expectedResult int32 = 6
 	// Act
 	result := simpleArraySum(input)
+	// Assert
 	if result != expectedResult {
 		t.Errorf("simpleArraySum() = %v, want %v", result, expectedResult)
 	}
@@ -29,6 +30,7 @@ func TestShouldSumArrayScenario2(t *testing.T) {
 	defer func() { os.Stdin = oldStdin }()
 	os.Stdin = sampleInputFile
 	outputFileName := "sample-1-output.txt"
+	defer func() { os.Remove(outputFileName) }()
 	err = os.Setenv("OUTPUT_PATH", outputFileName)
 	if err != nil {
 		t.Errorf("Error while setting ENV variable: %s", err)
@@ -48,7 +50,6 @@ func TestShouldSumArrayScenario2(t *testing.T) {
 	if sum != expectedResult {
 		t.Errorf("Got %v, want %v", result, expectedResult)
 	}
-	defer func() { os.Remove(outputFileName) }()
 }
 
 func TestShouldPanicGivenNumberEntryIsGreaterThan1000(t *testing.T) {
