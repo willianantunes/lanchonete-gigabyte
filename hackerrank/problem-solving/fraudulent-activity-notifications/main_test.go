@@ -49,6 +49,19 @@ func TestShouldReceiveActivityNotificationScenario3(t *testing.T) {
 
 func TestShouldReceiveActivityNotificationScenario4(t *testing.T) {
 	// Arrange
+	expenditure := []int32{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+	var numberOfTrailingDays int32 = 2
+	var expectedResult int32 = 2
+	// Act
+	result := activityNotifications(expenditure, numberOfTrailingDays)
+	// Assert
+	if result != expectedResult {
+		t.Errorf("Got %v, want %v", result, expectedResult)
+	}
+}
+
+func TestShouldReceiveActivityNotificationScenario5(t *testing.T) {
+	// Arrange
 	sampleInputFile, err := os.Open("testdata/sample-1.log")
 	if err != nil {
 		t.Errorf("Error while opening the file: %s", err)

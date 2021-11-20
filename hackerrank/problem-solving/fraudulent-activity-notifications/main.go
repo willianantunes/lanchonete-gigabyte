@@ -27,6 +27,7 @@ import (
  */
 func activityNotifications(expenditures []int32, numberOfTrailingDays int32) int32 {
 	// Control variables
+	receivedNotifications := make(chan int)
 	var numberOfNotifications int32 = 0
 	totalExpenditures := int32(len(expenditures))
 	whereAnalysisStart := numberOfTrailingDays
@@ -57,17 +58,25 @@ func activityNotifications(expenditures []int32, numberOfTrailingDays int32) int
 			return (middleRight + middleLeft) / 2
 		}
 	}
-	// Dealer
-	for dayToBeAnalysed := whereAnalysisStart; dayToBeAnalysed < totalExpenditures; dayToBeAnalysed++ {
+	dayAnalyser := func(dayToBeAnalysed int32) {
 		dayExpenditure := expenditures[dayToBeAnalysed]
 		trailingExpenditures := retrieveTrailingExpenditures(expenditures, numberOfTrailingDays, dayToBeAnalysed)
 		median := retrieveMedian(trailingExpenditures)
 		shouldSendNotification := float32(dayExpenditure) >= (2 * median)
 		if shouldSendNotification {
-			numberOfNotifications++
+			receivedNotifications <- 1
+		} else {
+			receivedNotifications <- 0
 		}
 	}
-
+	// Dealer
+	for dayToBeAnalysed := whereAnalysisStart; dayToBeAnalysed < totalExpenditures; dayToBeAnalysed++ {
+		go dayAnalyser(dayToBeAnalysed)
+	}
+	for dayToBeAnalysed := whereAnalysisStart; dayToBeAnalysed < totalExpenditures; dayToBeAnalysed++ {
+		notification := <-receivedNotifications
+		numberOfNotifications += int32(notification)
+	}
 	return numberOfNotifications
 }
 
