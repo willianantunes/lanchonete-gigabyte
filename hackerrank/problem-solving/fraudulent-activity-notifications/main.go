@@ -5,10 +5,39 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"sort"
 	"strconv"
 	"strings"
 )
+
+func countingSort(input []int32) []int32 {
+	// In order to retrieve the maximum number
+	var maximumNumber int32 = -1
+	for _, value := range input {
+		if value > maximumNumber {
+			maximumNumber = value
+		}
+	}
+	// Array to store the count of each number
+	var arrayWithCounterOfEachNumber = make([]int32, maximumNumber+1)
+	for _, value := range input {
+		arrayWithCounterOfEachNumber[value]++
+	}
+	// Modify de counter array by adding the previous counts
+	for index := 1; index < len(arrayWithCounterOfEachNumber); index++ {
+		previousElementIndex := index - 1
+		previousElementValue := arrayWithCounterOfEachNumber[previousElementIndex]
+		arrayWithCounterOfEachNumber[index] += previousElementValue
+	}
+	// Filling the output array
+	var sortedArray = make([]int32, len(input))
+	for _, value := range input {
+		counterOfValueInstances := arrayWithCounterOfEachNumber[value]
+		indexInSortedArray := counterOfValueInstances - 1
+		sortedArray[indexInSortedArray] = value
+		arrayWithCounterOfEachNumber[value]--
+	}
+	return sortedArray
+}
 
 /*
  * Complete the 'activityNotifications' function below.
@@ -32,18 +61,11 @@ func activityNotifications(expenditures []int32, numberOfTrailingDays int32) int
 	totalExpenditures := int32(len(expenditures))
 	whereAnalysisStart := numberOfTrailingDays
 	// Helper inner functions
-	retrieveTrailingExpenditures := func(expenses []int32, trailingDays int32, startPoint int32) []int {
-		trailingExpenditures := make([]int, 0)
-		var valuesTaken int32 = 0
-		for index := startPoint - 1; valuesTaken < trailingDays; index-- {
-			trailingExpenditure := int(expenses[index])
-			trailingExpenditures = append(trailingExpenditures, trailingExpenditure)
-			valuesTaken++
-		}
-		return trailingExpenditures
+	retrieveTrailingExpenditures := func(expenses []int32, trailingDays int32, startPoint int32) []int32 {
+		return expenses[startPoint-trailingDays : startPoint]
 	}
-	retrieveMedian := func(expenses []int) float32 {
-		sort.Ints(expenses)
+	retrieveMedian := func(expenses []int32) float32 {
+		expenses = countingSort(expenses)
 		currentLength := len(expenses)
 		isCurrentLengthOddNumber := currentLength%2 != 0
 		if isCurrentLengthOddNumber {
