@@ -9,7 +9,8 @@ import (
 	"strings"
 )
 
-func countingSort(input []int32) []int32 {
+func countingSort(inputPointer *[]int32) *[]int32 {
+	input := *inputPointer
 	// In order to retrieve the maximum number
 	var maximumNumber int32 = -1
 	for _, value := range input {
@@ -36,7 +37,7 @@ func countingSort(input []int32) []int32 {
 		sortedArray[indexInSortedArray] = value
 		arrayWithCounterOfEachNumber[value]--
 	}
-	return sortedArray
+	return &sortedArray
 }
 
 /*
@@ -61,29 +62,32 @@ func activityNotifications(expenditures []int32, numberOfTrailingDays int32) int
 	totalExpenditures := int32(len(expenditures))
 	whereAnalysisStart := numberOfTrailingDays
 	// Helper inner functions
-	retrieveTrailingExpenditures := func(expenses []int32, trailingDays int32, startPoint int32) []int32 {
-		return expenses[startPoint-trailingDays : startPoint]
+	retrieveTrailingExpenditures := func(expenses *[]int32, trailingDays *int32, startPoint *int32) []int32 {
+		beginning := *startPoint - *trailingDays
+		expensesValue := *expenses
+		return expensesValue[beginning:*startPoint]
 	}
-	retrieveMedian := func(expenses []int32) float32 {
-		expenses = countingSort(expenses)
-		currentLength := len(expenses)
+	retrieveMedian := func(expenses *[]int32) float32 {
+		sortedExpensesPointer := countingSort(expenses)
+		sortedExpenses := *sortedExpensesPointer
+		currentLength := len(sortedExpenses)
 		isCurrentLengthOddNumber := currentLength%2 != 0
 		if isCurrentLengthOddNumber {
 			index := currentLength / 2
-			return float32(expenses[index])
+			return float32(sortedExpenses[index])
 		} else {
 			middleRightIndex := currentLength / 2
 			middleLeftIndex := middleRightIndex - 1
-			middleRight := float32(expenses[middleRightIndex])
-			middleLeft := float32(expenses[middleLeftIndex])
+			middleRight := float32(sortedExpenses[middleRightIndex])
+			middleLeft := float32(sortedExpenses[middleLeftIndex])
 
 			return (middleRight + middleLeft) / 2
 		}
 	}
 	dayAnalyser := func(dayToBeAnalysed int32) {
 		dayExpenditure := expenditures[dayToBeAnalysed]
-		trailingExpenditures := retrieveTrailingExpenditures(expenditures, numberOfTrailingDays, dayToBeAnalysed)
-		median := retrieveMedian(trailingExpenditures)
+		trailingExpenditures := retrieveTrailingExpenditures(&expenditures, &numberOfTrailingDays, &dayToBeAnalysed)
+		median := retrieveMedian(&trailingExpenditures)
 		shouldSendNotification := float32(dayExpenditure) >= (2 * median)
 		if shouldSendNotification {
 			receivedNotifications <- 1
