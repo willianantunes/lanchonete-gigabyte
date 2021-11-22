@@ -9,37 +9,6 @@ import (
 	"strings"
 )
 
-func countingSort(inputPointer *[]int32) *[]int32 {
-	input := *inputPointer
-	// In order to retrieve the maximum number
-	var maximumNumber int32 = -1
-	for _, value := range input {
-		if value > maximumNumber {
-			maximumNumber = value
-		}
-	}
-	// Array to store the count of each number
-	var arrayWithCounterOfEachNumber = make([]int32, maximumNumber+1)
-	for _, value := range input {
-		arrayWithCounterOfEachNumber[value]++
-	}
-	// Modify de counter array by adding the previous counts
-	for index := 1; index < len(arrayWithCounterOfEachNumber); index++ {
-		previousElementIndex := index - 1
-		previousElementValue := arrayWithCounterOfEachNumber[previousElementIndex]
-		arrayWithCounterOfEachNumber[index] += previousElementValue
-	}
-	// Filling the output array
-	var sortedArray = make([]int32, len(input))
-	for _, value := range input {
-		counterOfValueInstances := arrayWithCounterOfEachNumber[value]
-		indexInSortedArray := counterOfValueInstances - 1
-		sortedArray[indexInSortedArray] = value
-		arrayWithCounterOfEachNumber[value]--
-	}
-	return &sortedArray
-}
-
 /*
  * Complete the 'activityNotifications' function below.
  *
@@ -57,51 +26,66 @@ func countingSort(inputPointer *[]int32) *[]int32 {
  */
 func activityNotifications(expenditures []int32, numberOfTrailingDays int32) int32 {
 	// Control variables
-	receivedNotifications := make(chan int)
 	var numberOfNotifications int32 = 0
-	totalExpenditures := int32(len(expenditures))
-	whereAnalysisStart := numberOfTrailingDays
+	// See the section constraints to understand why this array has 201 as its length
+	const numberConstraintMaximumValue = 201
+	var arrayWithCounterOfEachNumber = make([]int32, numberConstraintMaximumValue)
 	// Helper inner functions
-	retrieveTrailingExpenditures := func(expenses *[]int32, trailingDays *int32, startPoint *int32) []int32 {
-		beginning := *startPoint - *trailingDays
-		expensesValue := *expenses
-		return expensesValue[beginning:*startPoint]
+	sum := func(arr *[]int32) int32 {
+		arrValue := *arr
+		var result int32 = 0
+		for _, v := range arrValue {
+			result += v
+		}
+		return result
 	}
-	retrieveMedian := func(expenses *[]int32) float32 {
-		sortedExpensesPointer := countingSort(expenses)
-		sortedExpenses := *sortedExpensesPointer
-		currentLength := len(sortedExpenses)
-		isCurrentLengthOddNumber := currentLength%2 != 0
-		if isCurrentLengthOddNumber {
-			index := currentLength / 2
-			return float32(sortedExpenses[index])
+	retrieveLastElement := func(arr *[]int32) int32 {
+		arrValue := *arr
+		return arrValue[len(arrValue)-1]
+	}
+	retrieveLimitFromTrailingExpenditures := func(counterOfEachNumber []int32, trailingDays int32) int32 {
+		var positionIndex int32 = 0
+		middleLeftIndex := trailingDays / 2
+		middleRightOrIndeedMiddleIndex := middleLeftIndex + 1
+		var medianHelper = make([]int32, 0)
+		for numberUsedAsIndex, howMuchTheNumberAppears := range counterOfEachNumber {
+			positionIndex += howMuchTheNumberAppears
+			if len(medianHelper) == 0 && middleLeftIndex <= positionIndex {
+				medianHelper = append(medianHelper, int32(numberUsedAsIndex))
+			}
+			if middleRightOrIndeedMiddleIndex <= positionIndex {
+				medianHelper = append(medianHelper, int32(numberUsedAsIndex))
+				break
+			}
+		}
+		isTrailingDaysOddNumber := trailingDays%2 != 0
+		if isTrailingDaysOddNumber {
+			middleElement := retrieveLastElement(&medianHelper)
+			return middleElement * 2
 		} else {
-			middleRightIndex := currentLength / 2
-			middleLeftIndex := middleRightIndex - 1
-			middleRight := float32(sortedExpenses[middleRightIndex])
-			middleLeft := float32(sortedExpenses[middleLeftIndex])
-
-			return (middleRight + middleLeft) / 2
+			// Just sum the two middle elements
+			// Since we must multiply by 2 afterwards, we don't need to divide them
+			return sum(&medianHelper)
 		}
 	}
-	dayAnalyser := func(dayToBeAnalysed int32) {
-		dayExpenditure := expenditures[dayToBeAnalysed]
-		trailingExpenditures := retrieveTrailingExpenditures(&expenditures, &numberOfTrailingDays, &dayToBeAnalysed)
-		median := retrieveMedian(&trailingExpenditures)
-		shouldSendNotification := float32(dayExpenditure) >= (2 * median)
-		if shouldSendNotification {
-			receivedNotifications <- 1
-		} else {
-			receivedNotifications <- 0
-		}
+	// Filling the counter up until the day to be analysed
+	for _, value := range expenditures[:numberOfTrailingDays] {
+		arrayWithCounterOfEachNumber[value]++
 	}
 	// Dealer
-	for dayToBeAnalysed := whereAnalysisStart; dayToBeAnalysed < totalExpenditures; dayToBeAnalysed++ {
-		go dayAnalyser(dayToBeAnalysed)
-	}
-	for dayToBeAnalysed := whereAnalysisStart; dayToBeAnalysed < totalExpenditures; dayToBeAnalysed++ {
-		notification := <-receivedNotifications
-		numberOfNotifications += int32(notification)
+	for index, expenditureValue := range expenditures[numberOfTrailingDays:] {
+		limit := retrieveLimitFromTrailingExpenditures(arrayWithCounterOfEachNumber, numberOfTrailingDays)
+		shouldSendNotification := expenditureValue >= limit
+		if shouldSendNotification {
+			numberOfNotifications++
+		}
+		// Now we increase with the current number
+		arrayWithCounterOfEachNumber[expenditureValue]++
+		// Then decrease, cleaning the counter and moving the window
+		// https://stackoverflow.com/a/64111403/3899136
+		// https://youtu.be/MK-NZ4hN7rs
+		numberToBeSubtractedFromTheCounter := expenditures[index]
+		arrayWithCounterOfEachNumber[numberToBeSubtractedFromTheCounter]--
 	}
 	return numberOfNotifications
 }

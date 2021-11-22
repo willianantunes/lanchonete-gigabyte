@@ -86,8 +86,40 @@ func TestShouldReceiveActivityNotificationScenario5(t *testing.T) {
 	if len(result) != 2 && result[1] != "" {
 		t.Errorf("Output file seems wrong")
 	}
-	sum, _ := strconv.ParseInt(result[0], 10, 64)
-	if sum != expectedResult {
+	notifications, _ := strconv.ParseInt(result[0], 10, 64)
+	if notifications != expectedResult {
+		t.Errorf("Got %v, want %v", result, expectedResult)
+	}
+}
+
+func TestShouldReceiveActivityNotificationScenario6(t *testing.T) {
+	// Arrange
+	sampleInputFile, err := os.Open("testdata/sample-2.log")
+	if err != nil {
+		t.Errorf("Error while opening the file: %s", err)
+	}
+	oldStdin := os.Stdin
+	defer func() { os.Stdin = oldStdin }()
+	os.Stdin = sampleInputFile
+	outputFileName := "sample-2-output.txt"
+	defer func() { os.Remove(outputFileName) }()
+	err = os.Setenv("OUTPUT_PATH", outputFileName)
+	if err != nil {
+		t.Errorf("Error while setting ENV variable: %s", err)
+	}
+	var expectedResult int64 = 633
+	// Act
+	main()
+	// Assert
+	result, err := readFromFile(outputFileName)
+	if err != nil {
+		t.Errorf("Output file could not be opened: %s", err)
+	}
+	if len(result) != 2 && result[1] != "" {
+		t.Errorf("Output file seems wrong")
+	}
+	notifications, _ := strconv.ParseInt(result[0], 10, 64)
+	if notifications != expectedResult {
 		t.Errorf("Got %v, want %v", result, expectedResult)
 	}
 }
