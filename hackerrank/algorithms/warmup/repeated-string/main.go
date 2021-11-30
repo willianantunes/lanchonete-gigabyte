@@ -23,7 +23,15 @@ func repeatedString(s string, n int64) int64 {
 	letterToBeCounted := 'a'
 	receivedLetters := []rune(s)
 	countOfLetters := len(receivedLetters)
-	var countOfInteractions int64 = 0
+	// Variables to help internal logic
+	var numberToMultiply int64
+	var rest int64
+	if countOfLetters < int(n) {
+		numberToMultiply = n / int64(countOfLetters)
+		rest = n % int64(countOfLetters)
+	} else {
+		countOfLetters = int(n)
+	}
 	// Dealer
 	for index := 0; index < countOfLetters; index++ {
 		currentLetter := receivedLetters[index]
@@ -31,16 +39,18 @@ func repeatedString(s string, n int64) int64 {
 		if increaseCounter {
 			numberOfOccurrences++
 		}
-		// Getting back to the beginning if required
-		isItTheLastIndex := index == (countOfLetters - 1)
-		if isItTheLastIndex {
-			index = -1
-		}
-		// In order to stop the infinite loop if criteria is met
-		countOfInteractions++
-		mustFinishInfiniteLoop := countOfInteractions == n
-		if mustFinishInfiniteLoop {
-			break
+	}
+	if numberToMultiply != 0 {
+		numberOfOccurrences = numberOfOccurrences * numberToMultiply
+		extraComputationRequired := rest != 0
+		if extraComputationRequired {
+			for index := 0; index < int(rest); index++ {
+				currentLetter := receivedLetters[index]
+				increaseCounter := currentLetter == letterToBeCounted
+				if increaseCounter {
+					numberOfOccurrences++
+				}
+			}
 		}
 	}
 	return numberOfOccurrences

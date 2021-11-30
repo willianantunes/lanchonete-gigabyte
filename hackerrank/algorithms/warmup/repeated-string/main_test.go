@@ -42,3 +42,16 @@ func TestShouldReturnFrequencyOfLetterAScenario3(t *testing.T) {
 		t.Errorf("Got %v, want %v", result, expectedResult)
 	}
 }
+
+func TestShouldReturnFrequencyOfLetterAScenario4(t *testing.T) {
+	// Arrange
+	inputString := "ababa"
+	var nLetters int64 = 3
+	var expectedResult int64 = 2
+	// Act
+	result := repeatedString(inputString, nLetters)
+	// Assert
+	if result != expectedResult {
+		t.Errorf("Got %v, want %v", result, expectedResult)
+	}
+}
