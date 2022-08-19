@@ -1,6 +1,6 @@
 """
 Solution for LC#350: Intersection of Two Arrays II
-https://leetcode.com/problems/contains-duplicate/
+https://leetcode.com/problems/intersection-of-two-arrays-ii/
 """
 import unittest
 

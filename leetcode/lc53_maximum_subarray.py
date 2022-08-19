@@ -1,6 +1,6 @@
 """
 Solution for LC#53: Maximum Subarray
-https://leetcode.com/problems/contains-duplicate/
+https://leetcode.com/problems/maximum-subarray/
 """
 import unittest
 
