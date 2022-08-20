@@ -5,42 +5,20 @@ https://leetcode.com/problems/valid-anagram/
 import unittest
 
 
-def quick_sort(array: list):
-    array_length = len(array)
-    less_than_pivot = []
-    greater_than_pivot = []
-    equal_pivot = []
-
-    if array_length > 1:
-        pivot = array[0]
-        for entry in array:
-            if entry > pivot:
-                greater_than_pivot.append(entry)
-            elif entry < pivot:
-                less_than_pivot.append(entry)
-            else:
-                equal_pivot.append(entry)
-        return quick_sort(less_than_pivot) + equal_pivot + quick_sort(greater_than_pivot)
-    else:
-        return array
-
-
 class Solution:
     def isAnagram(self, s: str, t: str) -> bool:
-        s_codes = []
+        database_from_s = {}
+        database_from_t = {}
+
         for char in s:
-            char_as_code = ord(char)
-            s_codes.append(char_as_code)
+            counter = database_from_s.get(char, 0) + 1
+            database_from_s[char] = counter
 
-        t_codes = []
         for char in t:
-            char_as_code = ord(char)
-            t_codes.append(char_as_code)
+            counter = database_from_t.get(char, 0) + 1
+            database_from_t[char] = counter
 
-        s_codes = quick_sort(s_codes)
-        t_codes = quick_sort(t_codes)
-
-        return s_codes == t_codes
+        return database_from_s == database_from_t
 
 
 class TestSolution(unittest.TestCase):
