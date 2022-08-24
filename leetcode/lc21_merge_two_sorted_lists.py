@@ -27,50 +27,33 @@ class ListNode:
 
 class Solution:
     def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
-        if list1 is None and list2 is None:
+        if not list1 and not list2:
             return None
-        if list1 is None and list2 is not None:
+        if not list1 and list2:
             return list2
-        if list1 is not None and list2 is None:
+        if list1 and not list2:
             return list1
 
-        head = None
-        dummy_node = None
-        pointer_i, pointer_j = list1.val, list2.val
+        head = current = None
 
-        while pointer_i is not None or pointer_j is not None:
-            if pointer_i is None and pointer_j is not None:
-                previous_dummy_node = dummy_node
-                dummy_node = ListNode(pointer_j, list2.next)
-                previous_dummy_node.next = dummy_node
-                break
-            elif pointer_i is not None and pointer_j is None:
-                previous_dummy_node = dummy_node
-                dummy_node = ListNode(pointer_i, list1.next)
-                previous_dummy_node.next = dummy_node
-                break
-            elif pointer_i > pointer_j:
-                if head is None:
-                    head = dummy_node = previous_dummy_node = ListNode(pointer_j)
+        while list1 and list2:
+            if list1.val > list2.val:
+                if not head:
+                    head = current = list2
                 else:
-                    previous_dummy_node = dummy_node
-                    dummy_node = ListNode(pointer_j)
-                previous_dummy_node.next = dummy_node
-
-                next_list2 = list2.next
-                pointer_j = next_list2.val if next_list2 else None
-                list2 = next_list2
+                    current.next = list2
+                    current = current.next
+                list2 = list2.next
             else:
-                if head is None:
-                    head = dummy_node = previous_dummy_node = ListNode(pointer_i)
+                if not head:
+                    head = current = list1
                 else:
-                    previous_dummy_node = dummy_node
-                    dummy_node = ListNode(pointer_i)
-                previous_dummy_node.next = dummy_node
+                    current.next = list1
+                    current = current.next
+                list1 = list1.next
 
-                next_list1 = list1.next
-                pointer_i = next_list1.val if next_list1 else None
-                list1 = next_list1
+        if list1 or list2:
+            current.next = list1 if list1 else list2
 
         return head
 
