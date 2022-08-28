@@ -7,34 +7,29 @@ import unittest
 
 class Solution:
     def isValid(self, s: str) -> bool:
-        if len(s) == 1:
+        is_even = len(s) % 2 == 0
+        if not is_even:
             return False
 
-        def _is_valid(stack, current_value):
-            is_inner_valid = True
-            while stack and is_inner_valid:
-                next_value = stack[-1]
-                if ")" == next_value or "}" == next_value or "]" == next_value:
-                    is_inner_valid = _is_valid(stack, stack.pop())
-                else:
-                    break
-                if not is_inner_valid:
-                    return is_inner_valid
-            if not stack:
-                return False
-            right_value_as_unicode_point = ord(current_value)
-            left_value_as_unicode_point = ord(stack.pop())
-            is_one_type_valid = right_value_as_unicode_point - left_value_as_unicode_point == 1
-            are_two_types_valid = right_value_as_unicode_point - left_value_as_unicode_point == 2
-            if are_two_types_valid or is_one_type_valid:
-                return True
-            return False
+        open_and_close_values = {
+            "{": "}",
+            "(": ")",
+            "[": "]",
+        }
+        stack = []
 
-        stack_of_values = list(s)
-        last_evaluation = True
-        while stack_of_values and last_evaluation:
-            last_evaluation = _is_valid(stack_of_values, stack_of_values.pop())
-        return last_evaluation
+        for char in s:
+            if char in open_and_close_values:
+                stack.append(char)
+            else:
+                last_appended_value = stack.pop() if stack else None
+                if not last_appended_value:
+                    return False
+                expected_value_to_close = open_and_close_values[last_appended_value]
+                if char != expected_value_to_close:
+                    return False
+
+        return len(stack) == 0
 
 
 class TestSolution(unittest.TestCase):
