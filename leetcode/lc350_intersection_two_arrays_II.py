@@ -7,39 +7,28 @@ import unittest
 
 class Solution:
     def intersect(self, nums1: list[int], nums2: list[int]) -> list[int]:
-        number_of_entries_in_nums1 = len(nums1)
-        number_of_entries_in_nums2 = len(nums2)
-        total_number_of_interactions = number_of_entries_in_nums1 + number_of_entries_in_nums2
-        entries_counter_nums1 = {}
-        entries_counter_nums2 = {}
-        index = 0
+        database_nums1 = {}
+        database_nums2 = {}
 
-        def inner_function(target_index, target_list, target_counter):
-            value_from_target_list = target_list[target_index]
-            counter_value = target_counter.get(value_from_target_list, 0)
-            current_counter_value = counter_value + 1
-            target_counter[value_from_target_list] = current_counter_value
+        for value in nums1:
+            occurrences = database_nums1.get(value, 0) + 1
+            database_nums1[value] = occurrences
 
-        while index < total_number_of_interactions:
-            if index < number_of_entries_in_nums1 and index < number_of_entries_in_nums2:
-                inner_function(index, nums1, entries_counter_nums1)
-                inner_function(index, nums2, entries_counter_nums2)
-            elif number_of_entries_in_nums1 > index >= number_of_entries_in_nums2:
-                inner_function(index, nums1, entries_counter_nums1)
-            elif number_of_entries_in_nums2 > index >= number_of_entries_in_nums1:
-                inner_function(index, nums2, entries_counter_nums2)
-            index += 1
+        for value in nums2:
+            occurrences = database_nums2.get(value, 0) + 1
+            database_nums2[value] = occurrences
 
         intersection = []
-        keys_nums2 = entries_counter_nums2.keys()
-        for key_from_counter_nums1 in entries_counter_nums1.keys():
-            if key_from_counter_nums1 in keys_nums2:
-                counter_target_key_nums1 = entries_counter_nums1[key_from_counter_nums1]
-                counter_target_key_nums2 = entries_counter_nums2[key_from_counter_nums1]
-                if counter_target_key_nums1 > counter_target_key_nums2:
-                    intersection += [key_from_counter_nums1 for _ in range(counter_target_key_nums2)]
+
+        for entry in database_nums1.keys():
+            occurrences_in_nums2 = database_nums2.get(entry)
+            if occurrences_in_nums2 is not None:
+                occurrences_in_nums1 = database_nums1[entry]
+                if occurrences_in_nums1 > occurrences_in_nums2:
+                    entries_to_be_inserted = occurrences_in_nums2
                 else:
-                    intersection += [key_from_counter_nums1 for _ in range(counter_target_key_nums1)]
+                    entries_to_be_inserted = occurrences_in_nums1
+                intersection += [entry for _ in range(entries_to_be_inserted)]
 
         return intersection
 
