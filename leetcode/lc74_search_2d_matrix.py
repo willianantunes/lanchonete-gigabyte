@@ -7,47 +7,44 @@ import unittest
 from typing import Union
 
 
-def binary_search(ordered_array, target_value) -> Union[bool, int]:
-    y_values_size = len(ordered_array)
+def binary_search(desired_number, ordered_array) -> bool:
+    list_size = len(ordered_array)
     left = 0
-    right = y_values_size - 1
+    right = list_size - 1
 
     while left <= right:
-        middle = int((left + right) / 2)
-        if target_value == ordered_array[middle]:
+        middle = (left + right) // 2
+        value = ordered_array[middle]
+        if value == desired_number:
             return True
-        if target_value > ordered_array[middle]:
+        elif value < desired_number:
             left = middle + 1
         else:
             right = middle - 1
 
-    return right
+    return False
 
 
 class Solution:
     def searchMatrix(self, matrix: list[list[int]], target: int) -> bool:
         matrix_size = len(matrix)
-        if matrix_size == 1:
-            result = binary_search(matrix[0], target)
-            if result is True:
-                return True
-            return False
+        fixed_column = 0
+        chosen_row = last_value = None
+        for row in range(matrix_size):
+            value = matrix[row][fixed_column]
+            if row == 0:
+                chosen_row = row - 1
+                last_value = value
+                continue
+            if target < value and target >= last_value:
+                chosen_row = row - 1
+                break
+            chosen_row = row
+            last_value = value
 
-        y_values = []
-        for row in matrix:
-            y_values.append(row[0])
+        target_list = matrix[chosen_row]
 
-        result = binary_search(y_values, target)
-        if result is True:
-            return True
-
-        x_values = matrix[result]
-
-        result = binary_search(x_values, target)
-        if result is True:
-            return True
-
-        return False
+        return binary_search(target, target_list)
 
 
 class TestSolution(unittest.TestCase):
