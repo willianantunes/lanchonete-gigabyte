@@ -25,24 +25,19 @@ class ListNode:
 
 class Solution:
     def removeElements(self, head: ListNode | None, val: int) -> ListNode | None:
-        pointer_head = None
-        latest_valid_node = None
+        refreshed_linked_list = current = None
 
         while head:
             if head.val == val:
-                if latest_valid_node:
-                    latest_valid_node.next = None
-                head = head.next
+                if current:
+                    current.next = head.next
             else:
-                if not pointer_head:
-                    pointer_head = latest_valid_node = head
-                else:
-                    if latest_valid_node:
-                        latest_valid_node.next = head
-                    latest_valid_node = head
-                head = head.next
+                if not refreshed_linked_list:
+                    refreshed_linked_list = head
+                current = head
+            head = head.next
 
-        return pointer_head if pointer_head and pointer_head.val != val else None
+        return refreshed_linked_list
 
 
 class TestSolution(unittest.TestCase):
