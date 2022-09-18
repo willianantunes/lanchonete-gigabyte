@@ -8,22 +8,13 @@ import unittest
 class Solution:
     def majorityElement(self, nums: list[int]) -> int:
         database = {}
-        majority = "majority"
+        majority_count = len(nums) // 2
 
         for value in nums:
             counter = database.get(value, 0) + 1
             database[value] = counter
-            majority_element = database.get(majority)
-            if not majority_element:
-                majority_element = (value, counter)
-                database[majority] = majority_element
-            else:
-                m_value, m_counter = majority_element
-                if counter > m_counter:
-                    majority_element = (value, counter)
-                    database[majority] = majority_element
-
-        return database[majority][0]
+            if counter > majority_count:
+                return value
 
 
 class TestSolution(unittest.TestCase):
