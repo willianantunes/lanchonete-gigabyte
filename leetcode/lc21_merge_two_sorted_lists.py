@@ -4,8 +4,6 @@ https://leetcode.com/problems/merge-two-sorted-lists/
 """
 import unittest
 
-from typing import Optional
-
 
 class ListNode:
     def __init__(self, val=0, next=None):
@@ -26,7 +24,7 @@ class ListNode:
 
 
 class Solution:
-    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+    def mergeTwoLists(self, list1: ListNode | None, list2: ListNode | None) -> ListNode | None:
         if not list1 and not list2:
             return None
         if not list1 and list2:

@@ -75,3 +75,7 @@ class TestSolution(unittest.TestCase):
     def test_example_9(self):
         s = "]()[]{}"
         self.assertEqual(False, self.solution.isValid(s))
+
+    def test_example_10(self):
+        s = "(("
+        self.assertEqual(False, self.solution.isValid(s))

@@ -25,20 +25,17 @@ class ListNode:
 
 class Solution:
     def deleteDuplicates(self, head: ListNode | None) -> ListNode | None:
-        if not head:
-            return head
+        head_pointer = None
 
-        current = head
-        previous = None
-        while current:
-            if not previous:
-                previous = current
-            elif previous.val == current.val:
-                current = previous.next = current.next
+        while head:
+            if not head_pointer:
+                head_pointer = head
+            if head.next and head.val == head.next.val:
+                head.next = head.next.next
             else:
-                previous = current
+                head = head.next
 
-        return head
+        return head_pointer
 
 
 class TestSolution(unittest.TestCase):

@@ -4,8 +4,6 @@ https://leetcode.com/problems/linked-list-cycle/
 """
 import unittest
 
-from typing import Optional
-
 
 class ListNode:
     def __init__(self, x):
@@ -14,7 +12,7 @@ class ListNode:
 
 
 class Solution:
-    def hasCycle(self, head: Optional[ListNode]) -> bool:
+    def hasCycle(self, head: ListNode | None) -> bool:
         if not head:
             return False
         database_of_addresses = {}

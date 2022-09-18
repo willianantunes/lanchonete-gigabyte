@@ -50,32 +50,10 @@ class Solution:
     def insertIntoBST(self, root: TreeNode | None, val: int) -> TreeNode | None:
         if not root:
             return TreeNode(val)
-        if root and not root.left and not root.right:
-            if val < root.val:
-                root.left = TreeNode(val)
-            else:
-                root.right = TreeNode(val)
-            return root
-
-        def _traversal(node: TreeNode):
-            if node:
-                if val < node.val and not node.left:
-                    node.left = TreeNode(val)
-                    return True
-                elif val > node.val and not node.right:
-                    node.right = TreeNode(val)
-                    return True
-                elif val < node.val:
-                    inserted = _traversal(node.left)
-                    if inserted:
-                        return True
-                else:
-                    inserted = _traversal(node.right)
-                    if inserted:
-                        return True
-            return False
-
-        _traversal(root)
+        if val < root.val:
+            root.left = self.insertIntoBST(root.left, val)
+        else:
+            root.right = self.insertIntoBST(root.right, val)
 
         return root
 
