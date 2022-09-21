@@ -11,9 +11,7 @@ class Solution:
         nums_length = len(nums)
 
         for i in range(nums_length):
-            for k in range(nums_length):
-                if i == k:
-                    continue
+            for k in {*range(0, i), *range(i + 1, nums_length)}:
                 for j in {*range(i + 1, k), *range(k + i + 1, nums_length)}:
                     first_criteria = i != j and i != k and j != k
                     second_criteria = nums[i] + nums[j] + nums[k] == 0
