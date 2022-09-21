@@ -7,35 +7,29 @@ import unittest
 
 class Solution:
     def threeSum(self, nums: list[int]) -> list[list[int]]:
-        database_indexes = {}
-        database_triplets = {}
+        database = {}
         nums_length = len(nums)
 
         for i in range(nums_length):
             for k in range(nums_length):
-                for j in range(nums_length):
+                if i == k:
+                    continue
+                for j in {*range(i + 1, k), *range(k + i + 1, nums_length)}:
                     first_criteria = i != j and i != k and j != k
                     second_criteria = nums[i] + nums[j] + nums[k] == 0
                     if first_criteria and second_criteria:
-                        indexes_keys = [i, j, k]
-                        indexes_keys.sort()
-                        final_indexes_keys = "".join([str(key) for key in indexes_keys])
-                        database_indexes[final_indexes_keys] = [nums[i], nums[j], nums[k]]
+                        keys = [i, j, k]
+                        keys.sort()
+                        index = "".join([str(key) for key in keys])
                         triplet_key = [nums[i], nums[j], nums[k]]
                         triplet_key.sort()
-                        final_triplet_key = "".join([str(key) for key in triplet_key])
-                        counter = database_triplets.get(final_triplet_key, 0) + 1
-                        database_triplets[final_triplet_key] = counter
+                        database[index] = triplet_key, "".join([str(key) for key in triplet_key])
 
-        result = []
-        for triplet in database_indexes.values():
-            triplet.sort()
-            final_triplet_key = "".join([str(key) for key in triplet])
-            if database_triplets[final_triplet_key] != 0:
-                result.append(triplet)
-                database_triplets[final_triplet_key] = 0
+        result = {}
+        for triplet_key, triplet_hash in database.values():
+            result[triplet_hash] = triplet_key
 
-        return result
+        return list(result.values())
 
 
 class TestSolution(unittest.TestCase):
@@ -166,6 +160,27 @@ class TestSolution(unittest.TestCase):
                 [-14, 4, 10],
                 [-5, -5, 10],
                 [-2, -2, 4],
+            ],
+            self.solution.threeSum(nums),
+        )
+
+    def test_example_5(self):
+        nums = [3, -2, 1, 0]
+        self.assertEqual([], self.solution.threeSum(nums))
+
+    def test_example_6(self):
+        nums = [-1, 0, 1, 2, -1, -4, -2, -3, 3, 0, 4]
+        self.assertEqual(
+            [
+                [-4, 0, 4],
+                [-4, 1, 3],
+                [-3, -1, 4],
+                [-3, 0, 3],
+                [-3, 1, 2],
+                [-2, -1, 3],
+                [-2, 0, 2],
+                [-1, -1, 2],
+                [-1, 0, 1],
             ],
             self.solution.threeSum(nums),
         )
