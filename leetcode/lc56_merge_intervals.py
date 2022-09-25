@@ -10,19 +10,27 @@ class Solution:
         result = []
         start = control = None
 
-        def sort(array: list):
+        def quicksort(array: list) -> list:
             length = len(array)
-            for target in range(length):
-                swapped = False
-                for left_pointer in range(0, length - target - 1):
-                    right_pointer = left_pointer + 1
-                    if array[left_pointer][0] > array[right_pointer][0]:
-                        array[left_pointer], array[right_pointer] = array[right_pointer], array[left_pointer]
-                        swapped = True
-                if not swapped:
-                    break
 
-        sort(intervals)
+            less_than_pivot = []
+            equal_pivot = []
+            greater_than_pivot = []
+
+            if length > 1:
+                pivot = array[0]
+                for entry in array:
+                    if entry[0] < pivot[0]:
+                        less_than_pivot.append(entry)
+                    elif entry[0] > pivot[0]:
+                        greater_than_pivot.append(entry)
+                    else:
+                        equal_pivot.append(entry)
+                return quicksort(less_than_pivot) + equal_pivot + quicksort(greater_than_pivot)
+            else:
+                return array
+
+        intervals = quicksort(intervals)
 
         for interval in intervals:
             if start is None:
