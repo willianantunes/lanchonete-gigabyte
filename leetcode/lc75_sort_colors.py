@@ -11,18 +11,19 @@ class Solution:
         Do not return anything, modify nums in-place instead.
         """
         number_of_colors = len(nums)
-        for number_of_interactions in range(number_of_colors):
-            swapped = False
-            end_index = number_of_colors - number_of_interactions - 1
-            for left_pointer in range(0, end_index):
-                right_pointer = left_pointer + 1
-                left_value = nums[left_pointer]
-                right_value = nums[right_pointer]
-                if left_value > right_value:
-                    nums[left_pointer], nums[right_pointer] = nums[right_pointer], nums[left_pointer]
-                    swapped = True
-            if not swapped:
-                break
+        bottom = middle = 0
+        upper = number_of_colors - 1
+        while middle <= upper:
+            middle_value = nums[middle]
+            if middle_value == 1:
+                middle += 1
+            elif middle_value == 0:
+                nums[bottom], nums[middle] = nums[middle], nums[bottom]
+                middle += 1
+                bottom += 1
+            else:
+                nums[middle], nums[upper] = nums[upper], nums[middle]
+                upper -= 1
 
 
 class TestSolution(unittest.TestCase):
