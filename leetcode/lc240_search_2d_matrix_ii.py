@@ -4,31 +4,29 @@ https://leetcode.com/problems/search-a-2d-matrix-ii/
 """
 import unittest
 
-# Time complexity: O(M log N) as we do a binary search for each row.
+# Time complexity: O(M + N) as the worst case implies reading at most M + N cells.
 # Space complexity: O(1) no extra structure is used to find the target number.
-
-
-def binary_search(array: list, desired_number: int) -> bool:
-    array_length = len(array)
-    pointer_left = 0
-    pointer_right = array_length - 1
-
-    while pointer_left <= pointer_right:
-        middle_pointer = (pointer_left + pointer_right) // 2
-        value = array[middle_pointer]
-        if value == desired_number:
-            return True
-        if value < desired_number:
-            pointer_left = middle_pointer + 1
-        else:
-            pointer_right = middle_pointer - 1
 
 
 class Solution:
     def searchMatrix(self, matrix: list[list[int]], target: int) -> bool:
-        for line in matrix:
-            if binary_search(line, target):
+        number_of_lines = len(matrix)
+        number_of_columns = len(matrix[0])
+        row_index, column_index = 0, number_of_columns - 1
+
+        while column_index >= 0 and row_index < number_of_lines:
+            cell_value = matrix[row_index][column_index]
+
+            decrease_column_index = cell_value > target
+            increase_row_index = cell_value < target
+
+            if decrease_column_index:
+                column_index -= 1
+            elif increase_row_index:
+                row_index += 1
+            else:
                 return True
+
         return False
 
 
@@ -38,7 +36,7 @@ class TestSolution(unittest.TestCase):
 
     def test_example_1(self):
         matrix = [[1, 4, 7, 11, 15], [2, 5, 8, 12, 19], [3, 6, 9, 16, 22], [10, 13, 14, 17, 24], [18, 21, 23, 26, 30]]
-        target = 5
+        target = 18
         self.assertEqual(True, self.solution.searchMatrix(matrix, target))
 
     def test_example_2(self):
