@@ -7,8 +7,7 @@ import unittest
 
 class Solution:
     def twoSum(self, nums: list[int], target: int) -> list[int]:
-        nums_length = len(nums)
-        if nums_length == 2:
+        if len(nums) == 2:
             return [0, 1]
 
         database_of_numbers = {}
@@ -16,13 +15,10 @@ class Solution:
             database_of_numbers[value] = index
 
         for index, value in enumerate(nums):
-            if value >= target:
-                expected_database_key = value + target if target >= value else (value - target) * -1
-            else:
-                expected_database_key = (value - target) * -1
-            database_key_index = database_of_numbers.get(expected_database_key)
-            if database_key_index and database_key_index != index:
-                return [index, database_key_index]
+            desirable_number = target - value
+            desirable_index = database_of_numbers.get(desirable_number)
+            if desirable_index is not None and desirable_index != index:
+                return [index, desirable_index]
 
 
 class TestSolution(unittest.TestCase):
