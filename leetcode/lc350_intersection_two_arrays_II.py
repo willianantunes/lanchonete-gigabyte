@@ -10,27 +10,23 @@ class Solution:
         database_nums1 = {}
         database_nums2 = {}
 
-        for value in nums1:
-            occurrences = database_nums1.get(value, 0) + 1
-            database_nums1[value] = occurrences
+        for item in nums1:
+            counter = database_nums1.get(item, 0) + 1
+            database_nums1[item] = counter
 
-        for value in nums2:
-            occurrences = database_nums2.get(value, 0) + 1
-            database_nums2[value] = occurrences
+        for item in nums2:
+            counter = database_nums2.get(item, 0) + 1
+            database_nums2[item] = counter
 
-        intersection = []
+        intersect = []
+        for number in database_nums1:
+            occurrences = database_nums1[number]
+            occurrences_from_nums2 = database_nums2.get(number)
+            if occurrences_from_nums2 is not None:
+                times = min(occurrences, occurrences_from_nums2)
+                intersect += [number for _ in range(times)]
 
-        for entry in database_nums1.keys():
-            occurrences_in_nums2 = database_nums2.get(entry)
-            if occurrences_in_nums2 is not None:
-                occurrences_in_nums1 = database_nums1[entry]
-                if occurrences_in_nums1 > occurrences_in_nums2:
-                    entries_to_be_inserted = occurrences_in_nums2
-                else:
-                    entries_to_be_inserted = occurrences_in_nums1
-                intersection += [entry for _ in range(entries_to_be_inserted)]
-
-        return intersection
+        return intersect
 
 
 class TestSolution(unittest.TestCase):
