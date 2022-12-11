@@ -9,25 +9,24 @@ class Solution:
     def matrixReshape(self, mat: list[list[int]], r: int, c: int) -> list[list[int]]:
         number_of_rows = len(mat)
         number_of_columns = len(mat[0])
-        number_of_elements = number_of_rows * number_of_columns
-        number_of_elements_desired_reshaped = r * c
-        if number_of_elements != number_of_elements_desired_reshaped:
+        total_cells = number_of_rows * number_of_columns
+        is_illegal = total_cells != r * c
+        if is_illegal:
             return mat
 
-        elements = []
-        for row in range(number_of_rows):
-            for column in range(number_of_columns):
-                elements.append(mat[row][column])
+        mat_row_index = mat_column_index = 0
+        reshaped_matrix = []
+        for row_index in range(r):
+            reshaped_matrix.append([])
+            for column_index in range(c):
+                value = mat[mat_row_index][mat_column_index]
+                reshaped_matrix[row_index].append(value)
+                mat_column_index += 1
+                if mat_column_index == number_of_columns:
+                    mat_column_index = 0
+                    mat_row_index += 1
 
-        counter = 0
-        reshaped = []
-        for row in range(r):
-            reshaped.append([])
-            for column in range(c):
-                reshaped[row].append(elements[counter])
-                counter += 1
-
-        return reshaped
+        return reshaped_matrix
 
 
 class TestSolution(unittest.TestCase):
