@@ -7,23 +7,17 @@ import unittest
 
 class Solution:
     def maxProfit(self, prices: list[int]) -> int:
-        best_profit = 0
-        best_buy_index = best_sell_index = 0
+        max_profit = 0
+        lowest_price = prices[0]
 
-        for current_index, value in enumerate(prices):
-            best_buy = prices[best_buy_index]
-            best_sell = prices[best_sell_index]
+        for index in range(1, len(prices)):
+            stock_price = prices[index]
+            if stock_price < lowest_price:
+                lowest_price = stock_price
+            else:
+                max_profit = max(max_profit, stock_price - lowest_price)
 
-            if best_buy > value:
-                best_buy_index = current_index
-                best_sell_index = current_index
-            elif best_sell < value:
-                best_sell_index = current_index
-                best_sell = value
-                profit = best_sell - best_buy
-                best_profit = max(profit, best_profit)
-
-        return best_profit
+        return max_profit
 
 
 class TestSolution(unittest.TestCase):
