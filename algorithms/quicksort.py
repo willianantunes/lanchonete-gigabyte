@@ -74,16 +74,17 @@ def quicksort_recursion_inplace_2(array: list[int]):
     def _partition(start, end) -> int:
         pivot_value = array[end]
 
-        greater_than_p_index = start - 1
+        always_less = start - 1
 
-        for current_index in range(start, end):
-            if array[current_index] < pivot_value:
-                greater_than_p_index += 1
-                array[greater_than_p_index], array[current_index] = array[current_index], array[greater_than_p_index]
+        for always_greater in range(start, end):
+            is_less_than_pivot = array[always_greater] < pivot_value
+            if is_less_than_pivot:
+                always_less += 1
+                array[always_less], array[always_greater] = array[always_greater], array[always_less]
 
-        greater_than_p_index += 1
-        array[greater_than_p_index], array[end] = array[end], array[greater_than_p_index]
-        return greater_than_p_index
+        always_less += 1
+        array[always_less], array[end] = array[end], array[always_less]
+        return always_less
 
     def _quicksort(start, end):
         if start >= end:
@@ -191,24 +192,24 @@ class TestQuicksortInPlace2(unittest.TestCase):
 class TestQuicksortRecursive(unittest.TestCase):
     def test_example_0(self):
         array = [8, 7, 6, 1, 0, 9, 2]
-        result = quicksort_recursion(array)
+        result = quicksort_recursion(array.copy())
         array.sort()
         self.assertEqual(array, result)
 
     def test_example_1(self):
         array = [1, 5, 4, 2, 7, 6, 4, 2, 12312, 54, 7, 31, 1]
-        result = quicksort_recursion(array)
+        result = quicksort_recursion(array.copy())
         array.sort()
         self.assertEqual(array, result)
 
     def test_example_2(self):
         array = [9, 8, 7, 3, 2, 1, 6, 5, 4, 3, 2, 6, 4, 3]
-        result = quicksort_recursion(array)
+        result = quicksort_recursion(array.copy())
         array.sort()
         self.assertEqual(array, result)
 
     def test_example_3(self):
         array = [6, 1, 3, 110, 123, 2, 5, 0]
-        result = quicksort_recursion(array)
+        result = quicksort_recursion(array.copy())
         array.sort()
         self.assertEqual(array, result)
