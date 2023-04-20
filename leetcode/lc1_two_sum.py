@@ -40,6 +40,11 @@ class TestSolution(unittest.TestCase):
         target = 6
         self.assertEqual([0, 1], self.solution.twoSum(nums, target))
 
+    def test_example_4(self):
+        nums = [1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 7, 1, 1, 1, 1, 1]
+        target = 11
+        self.assertEqual([5, 11], self.solution.twoSum(nums, target))
+
     def test_example_5(self):
         nums = [-1, -2, -3, -4, -5]
         target = -8
@@ -56,3 +61,8 @@ class TestSolution(unittest.TestCase):
         # fmt: on
         target = 3490891
         self.assertEqual([0, 1], self.solution.twoSum(nums, target))
+
+    def test_example_8(self):
+        nums = [3, 2, 3]
+        target = 6
+        self.assertEquals([0, 2], self.solution.twoSum(nums, target))
