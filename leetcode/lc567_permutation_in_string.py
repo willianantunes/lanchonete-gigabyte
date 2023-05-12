@@ -7,52 +7,18 @@ import unittest
 
 class Solution:
     def checkInclusion(self, s1: str, s2: str) -> bool:
-        database_of_s1 = {}
-        database_of_s2 = {}
-
-        for char in s1:
-            counter = database_of_s1.get(char, 0) + 1
-            database_of_s1[char] = counter
-        for char in s2:
-            counter = database_of_s2.get(char, 0) + 1
-            database_of_s2[char] = counter
-        for key in s1:
-            counter = database_of_s2.get(key)
-            if not counter:
-                return False
-
-        queue = []
-
-        for index, char in enumerate(s2):
-            if char in database_of_s1:
-                counter = database_of_s1.pop(char)
-                if counter > 1:
-                    counter -= 1
-                    database_of_s1[char] = counter
-                queue.append((char, counter))
-                index_position = index + 2
-                value = s2[index + 1 : index_position]
-                while database_of_s1.keys():
-                    if value not in database_of_s1:
-                        break
-                    counter = database_of_s1.pop(value)
-                    if counter > 1:
-                        counter -= 1
-                        database_of_s1[value] = counter
-                    queue.append((value, counter))
-                    previous_index, index_position = index_position, index_position + 1
-                    value = s2[previous_index:index_position]
-                if not database_of_s1.keys():
+        s1_as_array = sorted(s1)
+        s1_length = len(s1)
+        s2_length = len(s2)
+        current_index = 0
+        while current_index < s2_length:
+            char = s2[current_index]
+            if char in s1:
+                window = s2[current_index : current_index + s1_length]
+                sorted_window = sorted(window)
+                if s1_as_array == sorted_window:
                     return True
-                while queue:
-                    key, counter = queue.pop()
-                    has_element = database_of_s1.get(key)
-                    if has_element is not None:
-                        counter = database_of_s1[key] + 1
-                        database_of_s1[key] = counter
-                    else:
-                        database_of_s1[key] = counter
-
+            current_index += 1
         return False
 
 
@@ -94,3 +60,8 @@ class TestSolution(unittest.TestCase):
         s1 = "ccc"
         s2 = "cbac"
         self.assertEqual(False, self.solution.checkInclusion(s1, s2))
+
+    def test_example_8(self):
+        s1 = "adc"
+        s2 = "dcda"
+        self.assertEqual(True, self.solution.checkInclusion(s1, s2))
