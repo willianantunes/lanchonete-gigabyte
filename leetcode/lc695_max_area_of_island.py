@@ -9,33 +9,22 @@ class Solution:
     def maxAreaOfIsland(self, grid: list[list[int]]) -> int:
         number_of_rows = len(grid)
         number_of_columns = len(grid[0])
-        island_area = 1
-        island_area_counter = 0
 
-        for row in range(number_of_rows):
-            for column in range(number_of_columns):
-                area = grid[row][column]
-                island_counter = 0
-                if area == island_area:
-                    grid[row][column] = 0
-                    island_counter += 1
-                    left, up, right, down = (row, column - 1), (row - 1, column), (row, column + 1), (row + 1, column)
-                    cells = [left, up, right, down]
-                    checked = [(row, column)]
-                    while cells:
-                        cell = cells.pop()
-                        if cell not in checked:
-                            checked.append(cell)
-                            x, y = cell
-                            if number_of_rows > x >= 0 and number_of_columns > y >= 0:
-                                found_area = grid[x][y]
-                                if found_area == island_area:
-                                    island_counter += 1
-                                    grid[x][y] = 0
-                                    cells += [(x, y - 1), (x - 1, y), (x, y + 1), (x + 1, y)]
-                island_area_counter = max(island_area_counter, island_counter)
+        def _dfs(row, column):
+            if number_of_rows > row >= 0 and number_of_columns > column >= 0 and grid[row][column] == 1:
+                grid[row][column] = 0
+                return 1 + _dfs(row + 1, column) + _dfs(row - 1, column) + _dfs(row, column + 1) + _dfs(row, column - 1)
 
-        return island_area_counter
+            return 0
+
+        bigger_island = 0
+        for row_index in range(number_of_rows):
+            for column_index in range(number_of_columns):
+                if grid[row_index][column_index] == 1:
+                    area = _dfs(row_index, column_index)
+                    bigger_island = max(bigger_island, area)
+
+        return bigger_island
 
 
 class TestSolution(unittest.TestCase):
