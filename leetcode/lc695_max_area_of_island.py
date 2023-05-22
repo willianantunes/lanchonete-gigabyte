@@ -17,6 +17,7 @@ class Solution:
                 area = grid[row][column]
                 island_counter = 0
                 if area == island_area:
+                    grid[row][column] = 0
                     island_counter += 1
                     left, up, right, down = (row, column - 1), (row - 1, column), (row, column + 1), (row + 1, column)
                     cells = [left, up, right, down]
@@ -30,6 +31,7 @@ class Solution:
                                 found_area = grid[x][y]
                                 if found_area == island_area:
                                     island_counter += 1
+                                    grid[x][y] = 0
                                     cells += [(x, y - 1), (x - 1, y), (x, y + 1), (x + 1, y)]
                 island_area_counter = max(island_area_counter, island_counter)
 
