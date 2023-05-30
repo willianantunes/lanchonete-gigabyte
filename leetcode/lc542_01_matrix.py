@@ -5,30 +5,38 @@ https://leetcode.com/problems/01-matrix/
 import sys
 import unittest
 
+from collections import deque
+
 
 class Solution:
     def updateMatrix(self, mat: list[list[int]]) -> list[list[int]]:
         number_of_rows = len(mat)
         number_of_column = len(mat[0])
 
-        new_matrix = []
+        new_matrix = [[sys.maxsize for _ in range(number_of_column)] for _ in range(number_of_rows)]
 
+        queue = deque([])
         for row_index in range(number_of_rows):
-            new_matrix.append([])
             for column_index in range(number_of_column):
-                if mat[row_index][column_index] == 0:
-                    new_matrix[row_index].append(0)
-                else:
-                    new_matrix[row_index].append(sys.maxsize)
-                    for r in range(number_of_rows):
-                        for c in range(number_of_column):
-                            if mat[r][c] == 0:
-                                current_value = new_matrix[row_index][column_index]
-                                row_distance = abs(r - row_index)
-                                column_distance = abs(c - column_index)
-                                current_distance_from_the_zero = row_distance + column_distance
-                                new_value = min(current_value, current_distance_from_the_zero)
-                                new_matrix[row_index][column_index] = new_value
+                is_zero_cell = mat[row_index][column_index] == 0
+                if is_zero_cell:
+                    new_matrix[row_index][column_index] = 0
+                    queue.appendleft((row_index, column_index))
+
+        four_neighbor_pixels = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        while queue:
+            previous_row, previous_column = queue.popleft()
+            for neighbor_index in range(len(four_neighbor_pixels)):
+                target_row = previous_row + four_neighbor_pixels[neighbor_index][0]
+                target_column = previous_column + four_neighbor_pixels[neighbor_index][1]
+                are_targets_valid = number_of_rows > target_row >= 0 and number_of_column > target_column >= 0
+                if are_targets_valid:
+                    new_value = new_matrix[previous_row][previous_column] + 1
+                    current_value = new_matrix[target_row][target_column]
+                    if current_value > new_value:
+                        new_matrix[target_row][target_column] = new_value
+                        queue.appendleft((target_row, target_column))
+
         return new_matrix
 
 
