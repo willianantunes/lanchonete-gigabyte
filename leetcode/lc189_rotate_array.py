@@ -10,17 +10,10 @@ class Solution:
         """
         Do not return anything, modify nums in-place instead.
         """
-        k = k % len(nums)
-        nums.reverse()
-
-        def _reverse(start, end):
-            while start < end:
-                nums[start], nums[end] = nums[end], nums[start]
-                start += 1
-                end -= 1
-
-        _reverse(0, k - 1)
-        _reverse(k, len(nums) - 1)
+        reverse_until_k = -(k % len(nums))
+        last_elements = nums[reverse_until_k:]
+        first_elements = nums[:reverse_until_k]
+        nums[:] = last_elements + first_elements
 
 
 class TestSolution(unittest.TestCase):
