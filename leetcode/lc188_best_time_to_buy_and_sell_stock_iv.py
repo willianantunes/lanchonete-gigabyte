@@ -10,6 +10,32 @@ class Solution:
     def maxProfit(self, k: int, prices: list[int]) -> int:
         number_of_days = len(prices)
 
+        def _extract_profits_force_merge(transactions: list[tuple]):
+            tmp_profits = []
+            profits = []
+            base = previous = transactions[0]
+            for index in range(1, len(transactions)):
+                target = transactions[index]
+                low_price, stock_price = target
+                must_bind = low_price == previous[1] and previous[1] < stock_price
+                might_bind = low_price > base[0]
+                if must_bind:
+                    previous = target
+                elif might_bind:
+                    heapq.heappush(tmp_profits, previous[1] - base[0])
+                    previous = target
+                else:
+                    if not tmp_profits:
+                        heapq.heappush(profits, previous[1] - base[0])
+                    else:
+                        heapq.heappush(tmp_profits, previous[1] - base[0])
+                        value = heapq.nlargest(1, tmp_profits)
+                        heapq.heappush(profits, value[0])
+                    base = previous = target
+                    tmp_profits = []
+            heapq.heappush(profits, previous[1] - base[0])
+            return profits
+
         def _extract_profits(transactions: list[tuple], split_when_possible: bool) -> list[int]:
             profits = []
             base = previous = transactions[0]
@@ -39,9 +65,14 @@ class Solution:
             if day >= number_of_days:
                 result = 0
                 if transactions:
+                    profits_forces_merge = _extract_profits_force_merge(transactions)
                     profits_with_merge = _extract_profits(transactions, split_when_possible=False)
                     profits_with_split = _extract_profits(transactions, split_when_possible=True)
-                    result = max(sum(heapq.nlargest(k, profits_with_merge)), sum(heapq.nlargest(k, profits_with_split)))
+                    result = max(
+                        sum(heapq.nlargest(k, profits_forces_merge)),
+                        sum(heapq.nlargest(k, profits_with_merge)),
+                        sum(heapq.nlargest(k, profits_with_split)),
+                    )
                 return result
 
             stock_price = prices[day]
@@ -130,3 +161,10 @@ class TestSolution(unittest.TestCase):
         # (1, 9) = 8
         # (0, 9) = 9
         self.assertEqual(17, self.solution.maxProfit(k, prices))
+
+    def test_example_12(self):
+        k = 2
+        prices = [6, 5, 4, 8, 6, 8, 7, 8, 9, 4, 5]
+        # (4, 8) = 4
+        # (6, 9) = 3
+        self.assertEqual(7, self.solution.maxProfit(k, prices))
