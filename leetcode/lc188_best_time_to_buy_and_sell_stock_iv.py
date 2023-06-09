@@ -2,92 +2,41 @@
 Solution for LC#188: Best Time to Buy and Sell Stock IV
 https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/
 """
-import heapq
 import unittest
 
 
 class Solution:
     def maxProfit(self, k: int, prices: list[int]) -> int:
         number_of_days = len(prices)
+        # Debug counter value and check the huge optimization by yourself
+        cache = {"counter": 0}
 
-        def _extract_profits_force_merge(transactions: list[tuple]):
-            tmp_profits = []
-            profits = []
-            base = previous = transactions[0]
-            for index in range(1, len(transactions)):
-                target = transactions[index]
-                low_price, stock_price = target
-                must_bind = low_price == previous[1] and previous[1] < stock_price
-                might_bind = low_price > base[0]
-                if must_bind:
-                    previous = target
-                elif might_bind:
-                    heapq.heappush(tmp_profits, previous[1] - base[0])
-                    previous = target
-                else:
-                    if not tmp_profits:
-                        heapq.heappush(profits, previous[1] - base[0])
-                    else:
-                        heapq.heappush(tmp_profits, previous[1] - base[0])
-                        value = heapq.nlargest(1, tmp_profits)
-                        heapq.heappush(profits, value[0])
-                    base = previous = target
-                    tmp_profits = []
-            heapq.heappush(profits, previous[1] - base[0])
-            return profits
+        def _evaluate(allowed_transactions: int, day: int, is_bought: bool):
+            if allowed_transactions == 0 or day >= number_of_days:
+                return 0
+            known_result = cache.get(allowed_transactions, {}).get(day, {}).get(is_bought)
+            if known_result is not None:
+                return known_result
 
-        def _extract_profits(transactions: list[tuple], split_when_possible: bool) -> list[int]:
-            profits = []
-            base = previous = transactions[0]
-            for index in range(1, len(transactions)):
-                target = transactions[index]
-                low_price, stock_price = target
-                might_bind = low_price >= previous[0] and previous[1] < stock_price
-                can_split = previous[1] > low_price or previous[1] < low_price
-                if split_when_possible:
-                    if might_bind and can_split:
-                        heapq.heappush(profits, previous[1] - base[0])
-                        base = previous = target
-                    elif might_bind:
-                        previous = target
-                    else:
-                        heapq.heappush(profits, previous[1] - base[0])
-                        base = previous = target
-                elif might_bind:
-                    previous = target
-                else:
-                    heapq.heappush(profits, previous[1] - base[0])
-                    base = previous = target
-            heapq.heappush(profits, previous[1] - base[0])
-            return profits
-
-        def _evaluate(possible_profits: list, day: int, low_price: int, transactions: list[tuple]):
-            if day >= number_of_days:
-                result = 0
-                if transactions:
-                    profits_forces_merge = _extract_profits_force_merge(transactions)
-                    profits_with_merge = _extract_profits(transactions, split_when_possible=False)
-                    profits_with_split = _extract_profits(transactions, split_when_possible=True)
-                    result = max(
-                        sum(heapq.nlargest(k, profits_forces_merge)),
-                        sum(heapq.nlargest(k, profits_with_merge)),
-                        sum(heapq.nlargest(k, profits_with_split)),
-                    )
-                return result
-
-            stock_price = prices[day]
-            if low_price is not None:
-                if stock_price <= low_price:
-                    low_price = stock_price
-                else:
-                    transactions.append((low_price, stock_price))
-                    low_price = stock_price
+            when_bought = when_sold = 0
+            next_day = day + 1
+            if is_bought:
+                when_bought = prices[day] + _evaluate(allowed_transactions - 1, next_day, False)
             else:
-                low_price = stock_price
+                when_sold = -prices[day] + _evaluate(allowed_transactions, next_day, True)
+            when_stay_still = _evaluate(allowed_transactions, next_day, is_bought)
 
-            return _evaluate(possible_profits, day + 1, low_price, transactions)
+            cache["counter"] += 1
+            known_result = max(when_bought, when_sold, when_stay_still)
+            if not cache.get(allowed_transactions):
+                cache[allowed_transactions] = {}
+            if not cache[allowed_transactions].get(day):
+                cache[allowed_transactions][day] = {}
+            cache[allowed_transactions][day][is_bought] = known_result
+            return known_result
 
-        return _evaluate([], 1, prices[0], [])
+        # O(allowed_transactions * day * 2) => O(allowed_transactions * day)
+        return _evaluate(k, 0, False)
 
 
 class TestSolution(unittest.TestCase):
@@ -167,4 +116,6 @@ class TestSolution(unittest.TestCase):
         prices = [6, 5, 4, 8, 6, 8, 7, 8, 9, 4, 5]
         # (4, 8) = 4
         # (6, 9) = 3
+        # Without cache properly implemented the counter has 561
+        # With proper cache: 38
         self.assertEqual(7, self.solution.maxProfit(k, prices))
