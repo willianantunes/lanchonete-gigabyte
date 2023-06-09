@@ -17,21 +17,17 @@ class Solution:
         return version >= self.bad_version
 
     def firstBadVersion(self, n: int) -> int:
-        number_of_versions = n
-        pointer_left, pointer_right = 0, number_of_versions - 1
-        end_with_is_bad_version = False
+        def _first_bad_version(initial_version, last_version: int):
+            middle_version = (last_version + initial_version) // 2
+            if not self.isBadVersion(middle_version - 1) and self.isBadVersion(middle_version):
+                return middle_version
 
-        while pointer_left <= pointer_right:
-            middle_index = pointer_left + (pointer_right - pointer_left) // 2
-            supposed_middle_value = middle_index + 1
-            if self.isBadVersion(supposed_middle_value):
-                pointer_right = middle_index - 1
-                end_with_is_bad_version = True
-            else:
-                pointer_left = middle_index + 1
-                end_with_is_bad_version = False
+            if not self.isBadVersion(middle_version):
+                return _first_bad_version(middle_version + 1, last_version)
 
-        return supposed_middle_value if end_with_is_bad_version else supposed_middle_value + 1
+            return _first_bad_version(initial_version, middle_version - 1)
+
+        return _first_bad_version(0, n)
 
 
 class TestSolution(unittest.TestCase):
