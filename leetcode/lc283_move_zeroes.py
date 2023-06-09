@@ -10,22 +10,24 @@ class Solution:
         """
         Do not return anything, modify nums in-place instead.
         """
-        nums_length = len(nums)
+        number_of_nums = len(nums)
+        pointer_left, pointer_right = 0, 1
 
-        pointer_swap = 0
-        pointer_comparator = 1
-
-        while pointer_comparator < nums_length and pointer_swap < nums_length:
-            if nums[pointer_swap] != 0:
-                pointer_swap += 1
-                continue
-            if pointer_comparator < pointer_swap:
-                pointer_comparator = pointer_swap
-            if nums[pointer_comparator] == 0:
-                pointer_comparator += 1
-            elif pointer_comparator < nums_length and pointer_swap < nums_length:
-                if nums[pointer_swap] == 0:
-                    nums[pointer_swap], nums[pointer_comparator] = nums[pointer_comparator], nums[pointer_swap]
+        while pointer_left <= pointer_right < number_of_nums:
+            pointer_left_value = nums[pointer_left]
+            pointer_right_value = nums[pointer_right]
+            if pointer_left_value == 0 and pointer_right_value != 0:
+                nums[pointer_left], nums[pointer_right] = nums[pointer_right], nums[pointer_left]
+                pointer_left += 1
+                pointer_right += 1
+            elif pointer_left_value == 0 and pointer_right_value == 0:
+                pointer_right += 1
+            elif pointer_left_value != 0 and pointer_right_value == 0:
+                pointer_left += 1
+                pointer_right += 1
+            else:
+                pointer_left += 2
+                pointer_right += 2
 
 
 class TestSolution(unittest.TestCase):
