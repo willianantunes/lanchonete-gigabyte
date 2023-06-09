@@ -2,25 +2,20 @@
 Solution for LC#167: Two Sum II - Input Array Is Sorted
 https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/
 """
-import bisect
 import unittest
-
-
-def find_index(array: list, target: int):
-    array_length = len(array)
-    expected_index = bisect.bisect_left(array, target)
-    if array_length > expected_index and array[expected_index] == target:
-        return expected_index
 
 
 class Solution:
     def twoSum(self, numbers: list[int], target: int) -> list[int]:
-        for index, value in enumerate(numbers):
-            value_to_be_found = -1 * (value + (-1 * target))
-            found_index = find_index(numbers, value_to_be_found)
-            if found_index is not None and index != found_index:
-                indexes = [index + 1, found_index + 1] if index < found_index else [found_index + 1, index + 1]
-                return indexes
+        pointer_left, pointer_right = 0, len(numbers) - 1
+        while pointer_left <= pointer_right:
+            sum_from_each_pointer_value = numbers[pointer_left] + numbers[pointer_right]
+            if sum_from_each_pointer_value < target:
+                pointer_left += 1
+            elif sum_from_each_pointer_value > target:
+                pointer_right -= 1
+            else:
+                return [pointer_left + 1, pointer_right + 1]
 
 
 class TestSolution(unittest.TestCase):
@@ -51,3 +46,8 @@ class TestSolution(unittest.TestCase):
         numbers = [5, 25, 75]
         target = 100
         self.assertEqual([2, 3], self.solution.twoSum(numbers, target))
+
+    def test_example_6(self):
+        numbers = [3, 24, 50, 79, 88, 150, 345]
+        target = 200
+        self.assertEqual([3, 6], self.solution.twoSum(numbers, target))
