@@ -7,26 +7,18 @@ import unittest
 
 class Solution:
     def reverseWords(self, s: str) -> str:
-        def _invert_word(word: str):
-            word_as_list = list(word)
-            pointer_left = 0
-            pointer_right = len(word_as_list) - 1
-            while pointer_left < pointer_right:
-                word_as_list[pointer_left], word_as_list[pointer_right] = (
-                    word_as_list[pointer_right],
-                    word_as_list[pointer_left],
-                )
+        words = s.split(" ")
+        inverted_words = []
+        for w in words:
+            w_as_list = list(w)
+            pointer_left, pointer_right = 0, len(w_as_list) - 1
+            while pointer_left <= pointer_right:
+                w_as_list[pointer_left], w_as_list[pointer_right] = (w_as_list[pointer_right], w_as_list[pointer_left])
                 pointer_left += 1
                 pointer_right -= 1
-            return "".join(word_as_list)
+            inverted_words.append("".join(w_as_list))
 
-        words = s.split(" ")
-        reversed_words = []
-        for word in words:
-            reversed_word = _invert_word(word)
-            reversed_words.append(reversed_word)
-
-        return " ".join(reversed_words)
+        return " ".join(inverted_words)
 
 
 class TestSolution(unittest.TestCase):
