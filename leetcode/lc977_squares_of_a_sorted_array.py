@@ -7,30 +7,23 @@ import unittest
 
 class Solution:
     def sortedSquares(self, nums: list[int]) -> list[int]:
-        queue = []
-        copy_of_nums = nums.copy()
-        number_of_nums = len(copy_of_nums)
-        index = 0
-        ordered_queue = []
-        while index < number_of_nums:
-            number = copy_of_nums[index]
-            if number < 0:
-                nums.pop(0)
-                squared_number = number * number
-                queue.append(squared_number)
-                index += 1
-            elif queue:
-                lowest_number_from_queue = queue[-1]
-                squared_number = number * number
-                if squared_number < lowest_number_from_queue:
-                    ordered_queue.append(squared_number)
-                    index += 1
-                else:
-                    ordered_queue.append(queue.pop())
+        number_of_nums = len(nums)
+        new_array = [0] * number_of_nums
+        pointer_left, pointer_right = 0, number_of_nums - 1
+        insert_position = number_of_nums - 1
+
+        while insert_position >= 0:
+            pointer_left_value = nums[pointer_left] ** 2
+            pointer_right_value = nums[pointer_right] ** 2
+            if pointer_left_value < pointer_right_value:
+                new_array[insert_position] = pointer_right_value
+                pointer_right -= 1
             else:
-                ordered_queue.append(number * number)
-                index += 1
-        return ordered_queue + queue[::-1]
+                new_array[insert_position] = pointer_left_value
+                pointer_left += 1
+            insert_position -= 1
+
+        return new_array
 
 
 class TestSolution(unittest.TestCase):
