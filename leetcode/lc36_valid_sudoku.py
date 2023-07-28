@@ -4,51 +4,30 @@ https://leetcode.com/problems/valid-sudoku/
 """
 import unittest
 
+from collections import defaultdict
+
 
 class Solution:
     def isValidSudoku(self, board: list[list[str]]) -> bool:
         board_size = len(board)
-
-        def is_line_valid(fixed_position, retrieve_cell_value_callable):
-            counter_entries = {}
-            for index in range(board_size):
-                cell_value = retrieve_cell_value_callable(fixed_position, index)
-                if cell_value != ".":
-                    counter = counter_entries.get(cell_value, 0) + 1
-                    counter_entries[cell_value] = counter
-                    if counter > 1:
-                        return False
-            return True
+        row_store = defaultdict(set)
+        column_store = defaultdict(set)
+        grid_store = defaultdict(set)
 
         for row in range(board_size):
-            valid_row = is_line_valid(row, lambda fixed_position, index: board[fixed_position][index])
-            if not valid_row:
-                return False
-            row_as_column = row
-            valid_column = is_line_valid(row_as_column, lambda fixed_position, index: board[index][fixed_position])
-            if not valid_column:
-                return False
-            evaluate_boxes = (row + 1) % 3 == 0
-            if evaluate_boxes:
-                pointer = row
-                for lap, box_position in enumerate(range(0, 3)):
-                    box_start = (pointer + 1) - 3
-                    box_stop = pointer + 1
-                    interactions = 0
-                    counter_entries = {}
-                    for box_row in range(box_start, box_stop, 1):
-                        for box_column in range(0, 3):
-                            interactions += 1
-                            box_column = box_column if lap == 0 else box_column + (3 * box_position)
-                            cell_value = board[box_row][box_column]
-                            if cell_value != ".":
-                                counter = counter_entries.get(cell_value, 0) + 1
-                                counter_entries[cell_value] = counter
-                                if counter > 1:
-                                    return False
-                        if interactions % 9 == 0:
-                            counter_entries = {}
-                            interactions = 0
+            for column in range(board_size):
+                cell_value = board[row][column]
+                if not cell_value.isdigit():
+                    continue
+                invalid_row = cell_value in row_store[row]
+                invalid_column = cell_value in column_store[column]
+                grid_row, grid_column = row // 3, column // 3
+                invalid_grid = cell_value in grid_store[(grid_row, grid_column)]
+                if invalid_row or invalid_column or invalid_grid:
+                    return False
+                row_store[row].add(cell_value)
+                column_store[column].add(cell_value)
+                grid_store[(grid_row, grid_column)].add(cell_value)
 
         return True
 
@@ -98,3 +77,17 @@ class TestSolution(unittest.TestCase):
             [".", ".", "4", ".", ".", ".", ".", ".", "."],
         ]
         self.assertEqual(False, self.solution.isValidSudoku(board))
+
+    def test_example_4(self):
+        board = [
+            [".", "8", "7", "6", "5", "4", "3", "2", "1"],
+            ["2", ".", ".", ".", ".", ".", ".", ".", "."],
+            ["3", ".", ".", ".", ".", ".", ".", ".", "."],
+            ["4", ".", ".", ".", ".", ".", ".", ".", "."],
+            ["5", ".", ".", ".", ".", ".", ".", ".", "."],
+            ["6", ".", ".", ".", ".", ".", ".", ".", "."],
+            ["7", ".", ".", ".", ".", ".", ".", ".", "."],
+            ["8", ".", ".", ".", ".", ".", ".", ".", "."],
+            ["9", ".", ".", ".", ".", ".", ".", ".", "."],
+        ]
+        self.assertEqual(True, self.solution.isValidSudoku(board))
