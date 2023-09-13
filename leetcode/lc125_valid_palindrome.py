@@ -3,7 +3,6 @@ Solution for LC#125: Valid Palindrome
 https://leetcode.com/problems/valid-palindrome/
 Two Pointers / String
 """
-import re
 import unittest
 
 
